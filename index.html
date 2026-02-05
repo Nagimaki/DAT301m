@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickSum - Tóm tắt tin tức thông minh</title>
+    <style>
+        /* --- 1. CẤU HÌNH GIAO DIỆN CHUNG (CSS) --- */
+        :root {
+            --primary-color: #0f172a; /* Xanh đậm - Chuyên nghiệp */
+            --accent-color: #f59e0b;  /* Cam - Nổi bật hành động */
+            --bg-color: #f8fafc;      /* Xám nhạt - Nền */
+            --text-color: #334155;    /* Màu chữ chính */
+            --white: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            margin: 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        .btn-login {
+            padding: 8px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* --- Main Content --- */
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .hero-text {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-text h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        /* --- Input Section (Card) --- */
+        .input-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #94a3b8;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .input-group textarea, .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group textarea:focus, .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .options {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .topic-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .chip {
+            padding: 6px 12px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .chip.selected {
+            background: #e0f2fe;
+            color: #0284c7;
+            border-color: #0284c7;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-submit:hover {
+            background-color: #1e293b;
+        }
+
+        /* --- Result Section --- */
+        #result-section {
+            display: none; /* Ẩn mặc định */
+            margin-top: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-points ul {
+            padding-left: 20px;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+        }
+
+        .stats-bar {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* --- Loading Spinner --- */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Quick<span>Sum</span>.</div>
+        <nav>
+            <ul>
+                <li><a href="#">Trang chủ</a></li>
+                <li><a href="#">Tin đã lưu</a></li>
+                <li><a href="#">Chủ đề</a></li>
+            </ul>
+        </nav>
+        <div class="btn-login">Đăng nhập</div>
+    </header>
+
+    <main>
+        <div class="hero-text">
+            <h1>Đọc ít hơn, hiểu nhiều hơn</h1>
+            <p>Công cụ tóm tắt tin tức tự động sử dụng AI dành cho người bận rộn.</p>
+        </div>
+
+        <div class="input-card">
+            <div class="tabs">
+                <div class="tab-btn active" onclick="switchTab('text')">Văn bản</div>
+                <div class="tab-btn" onclick="switchTab('url')">Đường dẫn (URL)</div>
+            </div>
+
+            <div class="input-group" id="input-container">
+                <textarea id="inputText" rows="6" placeholder="Dán nội dung văn bản bạn muốn tóm tắt vào đây..."></textarea>
+                <input type="text" id="inputUrl" placeholder="Ví dụ: https://vnexpress.net/..." style="display: none;">
+            </div>
+
+            <div class="options">
+                <span class="topic-label">Chủ đề liên quan:</span>
+                <span class="chip" onclick="toggleChip(this)">Công nghệ</span>
+                <span class="chip" onclick="toggleChip(this)">Kinh tế</span>
+                <span class="chip" onclick="toggleChip(this)">Thể thao</span>
+                <span class="chip" onclick="toggleChip(this)">Đời sống</span>
+                <span class="chip" onclick="toggleChip(this)">Giáo dục</span>
+            </div>
+
+            <button class="btn-submit" onclick="processSummary()">
+                <div class="loader" id="loader"></div>
+                <span id="btn-text">Tóm tắt ngay</span>
+            </button>
+        </div>
+
+        <div id="result-section">
+            <div class="stats-bar">
+                ⚡ Bạn vừa tiết kiệm được 4 phút đọc. Tỉ lệ tóm tắt: 20% so với gốc.
+            </div>
+
+            <div class="result-grid">
+                <div class="result-card key-points">
+                    <h3>📌 Ý chính (Extractive)</h3>
+                    <ul>
+                        <li>Dự án xây dựng công cụ tóm tắt văn bản tự động giúp giải quyết vấn đề quá tải thông tin.</li>
+                        <li>Sử dụng mô hình lai (Hybrid Model) kết hợp trích xuất và viết lại câu.</li>
+                        <li>Hỗ trợ tính năng "Daily Digest" gửi tin tức tổng hợp mỗi sáng theo sở thích cá nhân.</li>
+                        <li>Mục tiêu giúp người dùng nắm bắt thông tin nhanh chóng dưới 1 phút.</li>
+                    </ul>
+                </div>
+
+                <div class="result-card">
+                    <h3>📝 Tóm tắt nội dung (Abstractive)</h3>
+                    <p style="text-align: justify;">
+                        Nhóm sinh viên Đại học FPT đã phát triển một hệ thống tóm tắt tin tức tiếng Việt nhằm giải quyết tình trạng thiếu thời gian của người đọc hiện đại. Khác với các công cụ truyền thống chỉ cắt ghép câu, hệ thống này sử dụng AI để hiểu ngữ cảnh và viết lại một bản tóm tắt mượt mà, tự nhiên. Người dùng có thể tùy chọn chủ đề yêu thích như Thể thao, Công nghệ hay Kinh tế để nhận bản tin tổng hợp mỗi ngày, giúp việc cập nhật tin tức trở nên chủ động và hiệu quả hơn.
+                    </p>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="chip">Sao chép</button>
+                        <button class="chip">Nghe đọc tin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 QuickSum Project - FPT University. Powered by AI Hybrid Model.</p>
+    </footer>
+
+    <script>
+        // Hàm chuyển đổi Tab (Văn bản / URL)
+        function switchTab(type) {
+            const textInput = document.getElementById('inputText');
+            const urlInput = document.getElementById('inputUrl');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            if (type === 'text') {
+                textInput.style.display = 'block';
+                urlInput.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                textInput.style.display = 'none';
+                urlInput.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        // Hàm chọn chủ đề (hiệu ứng visual)
+        function toggleChip(element) {
+            element.classList.toggle('selected');
+        }
+
+        // Hàm giả lập xử lý tóm tắt
+        function processSummary() {
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btn-text');
+            const resultSection = document.getElementById('result-section');
+            const btn = document.querySelector('.btn-submit');
+
+            // 1. Hiển thị trạng thái Loading
+            loader.style.display = 'block';
+            btnText.innerText = 'Đang xử lý...';
+            btn.style.opacity = '0.7';
+            resultSection.style.display = 'none'; // Ẩn kết quả cũ nếu có
+
+            // 2. Giả lập độ trễ (2 giây) như đang gọi API AI
+            setTimeout(() => {
+                // 3. Tắt loading và hiện kết quả
+                loader.style.display = 'none';
+                btnText.innerText = 'Tóm tắt ngay';
+                btn.style.opacity = '1';
+                
+                // Hiện phần kết quả
+                resultSection.style.display = 'block';
+                
+                // Cuộn xuống phần kết quả mượt mà
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+
+            }, 2000); 
+        }
+    </script>
+</body>
+</html>
