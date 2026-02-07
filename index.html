@@ -84,6 +84,113 @@
             color: white;
         }
 
+        .user-chip {
+            background-color: #e2e8f0;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .auth-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .auth-modal.active {
+            display: flex;
+        }
+
+        .auth-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            width: min(420px, 90vw);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .auth-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .auth-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: #e0f2fe;
+            border-color: #38bdf8;
+            color: #0c4a6e;
+        }
+
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-form.active {
+            display: flex;
+        }
+
+        .auth-form label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+        }
+
+        .auth-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .auth-message {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #dc2626;
+        }
+
         /* --- Main Content --- */
         main {
             max-width: 900px;
@@ -300,8 +407,40 @@
                 <li><a href="#">Chủ đề</a></li>
             </ul>
         </nav>
-        <div class="btn-login">Đăng nhập</div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="user-chip" id="user-chip" style="display: none;"></div>
+            <div class="btn-login" id="login-button">Đăng nhập</div>
+        </div>
     </header>
+
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-card">
+            <button class="auth-close" id="auth-close">×</button>
+            <h2>Xin chào!</h2>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+                <button class="auth-tab" data-tab="register">Đăng ký</button>
+            </div>
+            <form class="auth-form active" id="login-form">
+                <label for="login-username">Tên đăng nhập</label>
+                <input id="login-username" type="text" required>
+                <label for="login-password">Mật khẩu</label>
+                <input id="login-password" type="password" required>
+                <button class="auth-submit" type="submit">Đăng nhập</button>
+                <div class="auth-message" id="login-message"></div>
+            </form>
+            <form class="auth-form" id="register-form">
+                <label for="register-name">Họ và tên</label>
+                <input id="register-name" type="text" required>
+                <label for="register-username">Tên đăng nhập</label>
+                <input id="register-username" type="text" required>
+                <label for="register-password">Mật khẩu</label>
+                <input id="register-password" type="password" required>
+                <button class="auth-submit" type="submit">Tạo tài khoản</button>
+                <div class="auth-message" id="register-message"></div>
+            </form>
+        </div>
+    </div>
 
     <main>
         <div class="hero-text">
@@ -336,26 +475,19 @@
         </div>
 
         <div id="result-section">
-            <div class="stats-bar">
+            <div class="stats-bar" id="stats-bar">
                 ⚡ Bạn vừa tiết kiệm được 4 phút đọc. Tỉ lệ tóm tắt: 20% so với gốc.
             </div>
 
             <div class="result-grid">
                 <div class="result-card key-points">
                     <h3>📌 Ý chính (Extractive)</h3>
-                    <ul>
-                        <li>Dự án xây dựng công cụ tóm tắt văn bản tự động giúp giải quyết vấn đề quá tải thông tin.</li>
-                        <li>Sử dụng mô hình lai (Hybrid Model) kết hợp trích xuất và viết lại câu.</li>
-                        <li>Hỗ trợ tính năng "Daily Digest" gửi tin tức tổng hợp mỗi sáng theo sở thích cá nhân.</li>
-                        <li>Mục tiêu giúp người dùng nắm bắt thông tin nhanh chóng dưới 1 phút.</li>
-                    </ul>
+                    <ul id="key-points"></ul>
                 </div>
 
                 <div class="result-card">
                     <h3>📝 Tóm tắt nội dung (Abstractive)</h3>
-                    <p style="text-align: justify;">
-                        Nhóm sinh viên Đại học FPT đã phát triển một hệ thống tóm tắt tin tức tiếng Việt nhằm giải quyết tình trạng thiếu thời gian của người đọc hiện đại. Khác với các công cụ truyền thống chỉ cắt ghép câu, hệ thống này sử dụng AI để hiểu ngữ cảnh và viết lại một bản tóm tắt mượt mà, tự nhiên. Người dùng có thể tùy chọn chủ đề yêu thích như Thể thao, Công nghệ hay Kinh tế để nhận bản tin tổng hợp mỗi ngày, giúp việc cập nhật tin tức trở nên chủ động và hiệu quả hơn.
-                    </p>
+                    <p id="summary-text" style="text-align: justify;"></p>
                     <div style="margin-top: 20px; display: flex; gap: 10px;">
                         <button class="chip">Sao chép</button>
                         <button class="chip">Nghe đọc tin</button>
@@ -395,11 +527,30 @@
         }
 
         // Hàm giả lập xử lý tóm tắt
-        function processSummary() {
+        async function processSummary() {
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btn-text');
             const resultSection = document.getElementById('result-section');
             const btn = document.querySelector('.btn-submit');
+            const statsBar = document.getElementById('stats-bar');
+            const keyPoints = document.getElementById('key-points');
+            const summaryText = document.getElementById('summary-text');
+            const selectedTopics = Array.from(document.querySelectorAll('.chip.selected'))
+                .map((chip) => chip.textContent.trim());
+            const textInput = document.getElementById('inputText').value.trim();
+            const urlInput = document.getElementById('inputUrl').value.trim();
+            const activeTab = document.querySelector('.tab-btn.active');
+            const inputType = activeTab?.textContent.includes('URL') ? 'url' : 'text';
+            const payload = {
+                input_type: inputType,
+                content: inputType === 'text' ? textInput : urlInput,
+                topics: selectedTopics
+            };
+
+            if (!payload.content) {
+                alert('Vui lòng nhập nội dung hoặc URL để tóm tắt.');
+                return;
+            }
 
             // 1. Hiển thị trạng thái Loading
             loader.style.display = 'block';
@@ -407,21 +558,159 @@
             btn.style.opacity = '0.7';
             resultSection.style.display = 'none'; // Ẩn kết quả cũ nếu có
 
-            // 2. Giả lập độ trễ (2 giây) như đang gọi API AI
-            setTimeout(() => {
-                // 3. Tắt loading và hiện kết quả
+            try {
+                const response = await fetch('/api/summarize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Yêu cầu thất bại. Vui lòng thử lại.');
+                }
+
+                const data = await response.json();
+                statsBar.textContent = data.stats;
+                keyPoints.innerHTML = '';
+                data.key_points.forEach((point) => {
+                    const li = document.createElement('li');
+                    li.textContent = point;
+                    keyPoints.appendChild(li);
+                });
+                summaryText.textContent = data.summary;
+
+                resultSection.style.display = 'block';
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                alert(error.message);
+            } finally {
                 loader.style.display = 'none';
                 btnText.innerText = 'Tóm tắt ngay';
                 btn.style.opacity = '1';
-                
-                // Hiện phần kết quả
-                resultSection.style.display = 'block';
-                
-                // Cuộn xuống phần kết quả mượt mà
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-
-            }, 2000); 
+            }
         }
+
+        const authModal = document.getElementById('auth-modal');
+        const loginButton = document.getElementById('login-button');
+        const authClose = document.getElementById('auth-close');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginMessage = document.getElementById('login-message');
+        const registerMessage = document.getElementById('register-message');
+        const userChip = document.getElementById('user-chip');
+
+        function openAuthModal() {
+            authModal.classList.add('active');
+        }
+
+        function closeAuthModal() {
+            authModal.classList.remove('active');
+            loginMessage.textContent = '';
+            registerMessage.textContent = '';
+        }
+
+        function setActiveTab(tabName) {
+            authTabs.forEach((tab) => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            loginForm.classList.toggle('active', tabName === 'login');
+            registerForm.classList.toggle('active', tabName === 'register');
+        }
+
+        let isAuthenticated = false;
+
+        function setAuthState(authenticated, fullName = '') {
+            isAuthenticated = authenticated;
+            if (authenticated) {
+                userChip.style.display = 'inline-flex';
+                userChip.textContent = fullName;
+                loginButton.textContent = 'Đăng xuất';
+            } else {
+                userChip.style.display = 'none';
+                userChip.textContent = '';
+                loginButton.textContent = 'Đăng nhập';
+            }
+        }
+
+        loginButton.addEventListener('click', () => {
+            if (isAuthenticated) {
+                setAuthState(false);
+                return;
+            }
+            openAuthModal();
+        });
+        authClose.addEventListener('click', closeAuthModal);
+        authModal.addEventListener('click', (event) => {
+            if (event.target === authModal) {
+                closeAuthModal();
+            }
+        });
+
+        authTabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                setActiveTab(tab.dataset.tab);
+            });
+        });
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            loginMessage.textContent = '';
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Đăng nhập thất bại.');
+                }
+
+                setAuthState(true, data.full_name);
+                closeAuthModal();
+            } catch (error) {
+                loginMessage.textContent = error.message;
+            }
+        });
+
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            registerMessage.textContent = '';
+            const fullName = document.getElementById('register-name').value.trim();
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ full_name: fullName, username, password })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Đăng ký thất bại.');
+                }
+
+                registerMessage.style.color = '#16a34a';
+                registerMessage.textContent = 'Đăng ký thành công. Bạn có thể đăng nhập ngay.';
+                setActiveTab('login');
+            } catch (error) {
+                registerMessage.style.color = '#dc2626';
+                registerMessage.textContent = error.message;
+            }
+        });
     </script>
 </body>
 </html>
